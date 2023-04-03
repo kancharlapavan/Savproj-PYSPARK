@@ -25,7 +25,7 @@ spark.sql("select * from userr limit(5)").show()
 df_act =spark.read.jdbc(url=jdbcUrl, table="activitylog", properties=connectionProperties)
 df_act.write.mode("overwrite").saveAsTable("pavan.activitylogg")
 spark.sql("select * from activitylogg limit(5)").show()
-spark.sql("CREATE TABLE IF NOT EXISTS pavan.userdump(user_id bigint, filename string, time_stamp bigint)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' stored$
+spark.sql("CREATE EXTERNAL TABLE IF NOT EXISTS pavan.userdump(user_id bigint, filename string, time_stamp bigint)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' stored$
 #spark.sql("LOAD DATA INPATH '/user/hadoop/pavan/user_upload_dump_2023_03_06.csv' overwrite into table pavan.userdump")
 spark.sql("select * from userdump").show()
 ## USER_REPORT TABLE
@@ -61,13 +61,13 @@ spark.sql("select * from user_report").show()
 
 spark.sql("""CREATE TABLE IF NOT EXISTS pavan.user_total(time_ran timestamp, total_users int,users_added int)
         ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE""")
-
+	  
 spark.sql("""
         INSERT INTO user_total
         SELECT
         t1.time_ran,
         t1.total_users,
-        t1.total_users-COALESCE((
+        t1.total_users-COALESCE(
         t2.total_users,0) AS users_added
         FROM(
         SELECT CURRENT_TIMESTAMP()AS time_ran,
@@ -81,4 +81,5 @@ spark.sql("""
         ORDER BY t1.time_ran
         """)
 spark.sql("select * from user_total").show()
+
 
